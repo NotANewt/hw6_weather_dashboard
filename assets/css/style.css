@@ -1,0 +1,16 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.background-blue-gradient {
+  background: rgb(61, 154, 245);
+  background: linear-gradient(97deg, rgba(61, 154, 245, 1) 0%, rgba(91, 135, 253, 1) 36%, rgba(12, 3, 144, 1) 71%);
+}
+
+.background-starting-blue {
+  background: rgb(61, 154, 245);
+}
+
+.background-end-blue {
+  background: rgba(12, 3, 144, 1);
+}
