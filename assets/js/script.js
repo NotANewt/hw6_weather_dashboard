@@ -67,22 +67,19 @@ function handleResults(cityName, latitude, longitude) {
         displayError();
       } else {
         // if no error message, call displayCurrentResults and send city name, weather icon, temp, wind speed, humidity, and uv index
-
-        // variable for fetched data
         // variable for city name
         const weatherCityName = cityName;
-        // weather icon
+        // variable for weather icon
         const currentWeatherIconId = data.current.weather[0].icon;
-        // weather description for alt tag
+        // variable for weather description for alt tag
         const currentWeatherDescription = data.current.weather[0].description;
-        console.log(currentWeatherDescription);
-        // temp
+        // variable for temp
         const currentTemp = data.current.temp;
-        // wind speed
+        // variable for wind speed
         const currentWindSpeed = data.current.wind_speed;
-        // humidity
+        // variable for humidity
         const currentHumidity = data.current.humidity;
-        // uv index
+        // variable for uv index
         const currentUVI = data.current.uvi;
         // call displayCurrentResults and send it variables
         displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI);
@@ -102,11 +99,15 @@ function displayError() {
 function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI) {
   // clear existing strings
   clearCurrentWeatherCard();
+  // clear existing error
+  document.getElementById("errorDiv").innerHTML = "";
   // display city name
   document.getElementById("citySpan").innerHTML = weatherCityName;
+  // display current date
+  const currentDate = moment().format("L");
+  document.getElementById("dateSpan").innerHTML = currentDate;
   // display weather icon
-  document.getElementById("currentWeatherIconDisplay").src = "http://openweathermap.org/img/wn/10d@2x.png";
-  console.log(currentWeatherIconId);
+  document.getElementById("currentWeatherIconDisplay").src = `http://openweathermap.org/img/wn/${currentWeatherIconId}@2x.png`;
   // add appropriate alt property to icon image
   document.getElementById("currentWeatherIconDisplay").alt = currentWeatherDescription;
   // display current temperature
