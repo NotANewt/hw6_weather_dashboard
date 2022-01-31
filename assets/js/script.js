@@ -67,10 +67,15 @@ function handleResults(cityName, latitude, longitude) {
         displayError();
       } else {
         // if no error message, call displayCurrentResults and send city name, weather icon, temp, wind speed, humidity, and uv index
+
+        // variable for fetched data
         // variable for city name
         const weatherCityName = cityName;
-        //   TO DO: weather icon
-
+        // weather icon
+        const currentWeatherIconId = data.current.weather[0].icon;
+        // weather description for alt tag
+        const currentWeatherDescription = data.current.weather[0].description;
+        console.log(currentWeatherDescription);
         // temp
         const currentTemp = data.current.temp;
         // wind speed
@@ -79,8 +84,8 @@ function handleResults(cityName, latitude, longitude) {
         const currentHumidity = data.current.humidity;
         // uv index
         const currentUVI = data.current.uvi;
-
-        displayCurrentResults(weatherCityName, currentTemp, currentWindSpeed, currentHumidity, currentUVI);
+        // call displayCurrentResults and send it variables
+        displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI);
       }
     });
 }
@@ -94,12 +99,35 @@ function displayError() {
 }
 
 // displayCurrentResults
-function displayCurrentResults(weatherCityName, currentTemp, currentWindSpeed, currentHumidity, currentUVI) {
-  console.log(weatherCityName);
-  console.log(currentTemp);
-  console.log(currentWindSpeed);
-  console.log(currentHumidity);
-  console.log(currentUVI);
+function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI) {
+  // clear existing strings
+  clearCurrentWeatherCard();
+  // display city name
+  document.getElementById("citySpan").innerHTML = weatherCityName;
+  // display weather icon
+  document.getElementById("currentWeatherIconDisplay").src = "http://openweathermap.org/img/wn/10d@2x.png";
+  console.log(currentWeatherIconId);
+  // add appropriate alt property to icon image
+  document.getElementById("currentWeatherIconDisplay").alt = currentWeatherDescription;
+  // display current temperature
+  document.getElementById("currentTempDisplay").innerHTML = `Temp: ${currentTemp}°F`;
+  // display current wind speed
+  document.getElementById("currentWindDisplay").innerHTML = `Wind: ${currentWindSpeed} MPH`;
+  // display current humidity
+  document.getElementById("currentHumidityDisplay").innerHTML = `Humidity: ${currentHumidity} %`;
+  // display current UV Index
+  document.getElementById("currentUVIndexDisplay").innerHTML = `UV Index: ${currentUVI}`;
+}
+
+// clearCurrentWeatherCard to clear out all strings in Current Weather Card div
+function clearCurrentWeatherCard() {
+  document.getElementById("citySpan").innerHTML = "";
+  document.getElementById("dateSpan").innerHTML = "";
+  document.getElementById("currentWeatherIconDisplay").innerHTML = "";
+  document.getElementById("currentTempDisplay").innerHTML = "";
+  document.getElementById("currentWindDisplay").innerHTML = "";
+  document.getElementById("currentHumidityDisplay").innerHTML = "";
+  document.getElementById("currentUVIndexDisplay").innerHTML = "";
 }
 
 //event listeners
