@@ -14,3 +14,7 @@ body {
 .background-end-blue {
   background: rgba(12, 3, 144, 1);
 }
+
+.hidden {
+  display: none;
+}

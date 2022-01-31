@@ -2,10 +2,9 @@
 const searchBtn = document.getElementById("searchButton");
 
 // initial state
+
 // clear error response
 document.getElementById("errorDiv").innerHTML = "";
-// clear current weather card
-clearCurrentWeatherCard();
 
 // geolocation to load page with current location's weather
 geoLocation();
@@ -50,7 +49,6 @@ function cityNamefromLatLon(currentLat, currentLon) {
   // fetch
   fetch(fetchUrl)
     .then(function (response) {
-      console.log();
       return response.json();
     })
     .then(function (data) {
@@ -86,11 +84,9 @@ function cityNameToLatLon(event) {
   } else {
     // create fecth url
     const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
-
     // fetch
     fetch(fetchUrl)
       .then(function (response) {
-        console.log();
         return response.json();
       })
       .then(function (data) {
@@ -106,25 +102,23 @@ function cityNameToLatLon(event) {
           const latitude = data[0].lat;
           // variable for longitude
           const longitude = data[0].lon;
-          //call handleResults and send city name, latitude, and longitude
-          handleResults(cityName, latitude, longitude);
+          //call handleCurrentWeatherResults and send city name, latitude, and longitude
+          handleCurrentWeatherResults(cityName, latitude, longitude);
         }
       });
   }
 }
 
-// handleResults - takes city name, latitude, and longitude from cityNameFromLatLon (geolocation) or cityNameToLatLon
+// handleCurrentWeatherResults - takes city name, latitude, and longitude from cityNameFromLatLon (geolocation) or cityNameToLatLon
 function handleCurrentWeatherResults(cityName, latitude, longitude) {
   // create fecth url
   const fetchUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=517f19dc586407c39701b016a6edf914`;
-
   // fetch
   fetch(fetchUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-      console.log(data);
       // if received a 404 error message for city not found
       if (data.cod === "404") {
         // call displayError function
@@ -146,7 +140,7 @@ function handleCurrentWeatherResults(cityName, latitude, longitude) {
         // variable for uv index
         const currentUVI = data.current.uvi;
         // call displayCurrentResults and send it variables
-        displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI);
+        displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI, latitude, longitude);
       }
     });
 }
@@ -160,7 +154,7 @@ function displayError() {
 }
 
 // displayCurrentResults
-function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI) {
+function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI, latitude, longitude) {
   // clear existing strings
   clearCurrentWeatherCard();
   // clear existing error
@@ -171,7 +165,7 @@ function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWea
   const currentDate = moment().format("L");
   document.getElementById("dateSpan").innerHTML = currentDate;
   // display weather icon
-  document.getElementById("currentWeatherIconDisplay").src = `http://openweathermap.org/img/wn/${currentWeatherIconId}@2x.png`;
+  document.getElementById("currentWeatherIconDisplay").src = `https://openweathermap.org/img/wn/${currentWeatherIconId}@2x.png`;
   // add appropriate alt property to icon image
   document.getElementById("currentWeatherIconDisplay").alt = currentWeatherDescription;
   // display current temperature
@@ -182,6 +176,173 @@ function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWea
   document.getElementById("currentHumidityDisplay").innerHTML = `Humidity: ${currentHumidity} %`;
   // display current UV Index
   document.getElementById("currentUVIndexDisplay").innerHTML = `UV Index: ${currentUVI}`;
+  //call handleForecastWeatherResults and send latitude and longitude
+  handleForecastWeatherResults(latitude, longitude);
+}
+
+//handleForecastWeatherResults
+function handleForecastWeatherResults(latitude, longitude) {
+  // create fecth url
+  const fetchUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=517f19dc586407c39701b016a6edf914`;
+
+  // fetch
+  fetch(fetchUrl)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      // if received a 404 error message for city not found
+      if (data.cod === "404") {
+        // call displayError function
+        displayError();
+      } else {
+        // if no error message, call displayForeCastResults and send date, weather icon, temp, wind speed, humidity, and uv index
+        // day 1
+        // variable for weather icon id
+        const day1WeatherIconId = data.daily[1].weather[0].icon;
+        // variable for weather description
+        const day1WeatherDescription = data.daily[1].weather[0].description;
+        //variable for temp
+        const day1Temp = data.daily[1].temp.day;
+        //variable for Wind
+        const day1Wind = data.daily[1].wind_speed;
+        //variable for Humidity
+        const day1Humidity = data.daily[1].humidity;
+        //variable for UV Index
+        //const day1UVI = day.daily
+        //day 2
+        // variable for weather icon id
+        const day2WeatherIconId = data.daily[2].weather[0].icon;
+        // variable for weather description
+        const day2WeatherDescription = data.daily[2].weather[0].description;
+        //variable for temp
+        const day2Temp = data.daily[2].temp.day;
+        //variable for Wind
+        const day2Wind = data.daily[2].wind_speed;
+        //variable for Humidity
+        const day2Humidity = data.daily[2].humidity;
+        //day 3
+        // variable for weather icon id
+        const day3WeatherIconId = data.daily[3].weather[0].icon;
+        // variable for weather description
+        const day3WeatherDescription = data.daily[3].weather[0].description;
+        //variable for temp
+        const day3Temp = data.daily[3].temp.day;
+        //variable for Wind
+        const day3Wind = data.daily[3].wind_speed;
+        //variable for Humidity
+        const day3Humidity = data.daily[3].humidity;
+        //day 4
+        // variable for weather icon id
+        const day4WeatherIconId = data.daily[4].weather[0].icon;
+        // variable for weather description
+        const day4WeatherDescription = data.daily[4].weather[0].description;
+        //variable for temp
+        const day4Temp = data.daily[4].temp.day;
+        //variable for Wind
+        const day4Wind = data.daily[4].wind_speed;
+        //variable for Humidity
+        const day4Humidity = data.daily[4].humidity;
+        //day 5
+        // variable for weather icon id
+        const day5WeatherIconId = data.daily[5].weather[0].icon;
+        // variable for weather description
+        const day5WeatherDescription = data.daily[5].weather[0].description;
+        //variable for temp
+        const day5Temp = data.daily[5].temp.day;
+        //variable for ind
+        const day5Wind = data.daily[5].wind_speed;
+        //variable for Humidity
+        const day5Humidity = data.daily[5].humidity;
+
+        // call displayForecastResults for each forecast day and send it weather information for that day
+        displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1Temp, day1Wind, day1Humidity, day2WeatherIconId, day2WeatherDescription, day2Temp, day2Wind, day2Humidity, day3WeatherIconId, day3WeatherDescription, day3Temp, day3Wind, day3Humidity, day4WeatherIconId, day4WeatherDescription, day4Temp, day4Wind, day4Humidity, day5WeatherIconId, day5WeatherDescription, day5Temp, day5Wind, day5Humidity);
+      }
+    });
+}
+
+//
+function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1Temp, day1Wind, day1Humidity, day2WeatherIconId, day2WeatherDescription, day2Temp, day2Wind, day2Humidity, day3WeatherIconId, day3WeatherDescription, day3Temp, day3Wind, day3Humidity, day4WeatherIconId, day4WeatherDescription, day4Temp, day4Wind, day4Humidity, day5WeatherIconId, day5WeatherDescription, day5Temp, day5Wind, day5Humidity) {
+  // clear existing error
+  document.getElementById("errorDiv").innerHTML = "";
+
+  // Day 1 Forecast
+  // display current date
+  const day1forecastDate = moment().add(1, "d").format("L");
+  document.getElementById("forecastDay1Date").innerHTML = day1forecastDate;
+  // display weather icon
+  document.getElementById("forecastDay1WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day1WeatherIconId}@2x.png`;
+  // add appropriate alt property to icon image
+  document.getElementById("forecastDay1WeatherIconDisplay").alt = day1WeatherDescription;
+  // display current temperature
+  document.getElementById("forecastDay1Temp").innerHTML = `Temp: ${day1Temp}°F`;
+  // display current wind speed
+  document.getElementById("forecastDay1WindSpeed").innerHTML = `Wind: ${day1Wind} MPH`;
+  // display current humidity
+  document.getElementById("forecastDay1Humidity").innerHTML = `Humidity: ${day1Humidity} %`;
+
+  // Day 2 Forecast
+  // display current date
+  const day2forecastDate = moment().add(2, "d").format("L");
+  document.getElementById("forecastDay2Date").innerHTML = day2forecastDate;
+  // display weather icon
+  document.getElementById("forecastDay2WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day2WeatherIconId}@2x.png`;
+  // add appropriate alt property to icon image
+  document.getElementById("forecastDay2WeatherIconDisplay").alt = day2WeatherDescription;
+  // display current temperature
+  document.getElementById("forecastDay2Temp").innerHTML = `Temp: ${day2Temp}°F`;
+  // display current wind speed
+  document.getElementById("forecastDay2WindSpeed").innerHTML = `Wind: ${day2Wind} MPH`;
+  // display current humidity
+  document.getElementById("forecastDay2Humidity").innerHTML = `Humidity: ${day2Humidity} %`;
+
+  // Day 3 Forecast
+  // display current date
+  const day3forecastDate = moment().add(3, "d").format("L");
+  document.getElementById("forecastDay3Date").innerHTML = day3forecastDate;
+  // display weather icon
+  document.getElementById("forecastDay3WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day3WeatherIconId}@2x.png`;
+  // add appropriate alt property to icon image
+  document.getElementById("forecastDay3WeatherIconDisplay").alt = day3WeatherDescription;
+  // display current temperature
+  document.getElementById("forecastDay3Temp").innerHTML = `Temp: ${day3Temp}°F`;
+  // display current wind speed
+  document.getElementById("forecastDay3WindSpeed").innerHTML = `Wind: ${day3Wind} MPH`;
+  // display current humidity
+  document.getElementById("forecastDay3Humidity").innerHTML = `Humidity: ${day3Humidity} %`;
+
+  // Day 4 Forecast
+  // display current date
+  const day4forecastDate = moment().add(4, "d").format("L");
+  document.getElementById("forecastDay4Date").innerHTML = day4forecastDate;
+  // display weather icon
+  document.getElementById("forecastDay4WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day4WeatherIconId}@2x.png`;
+  // add appropriate alt property to icon image
+  document.getElementById("forecastDay4WeatherIconDisplay").alt = day4WeatherDescription;
+  // display current temperature
+  document.getElementById("forecastDay4Temp").innerHTML = `Temp: ${day4Temp}°F`;
+  // display current wind speed
+  document.getElementById("forecastDay4WindSpeed").innerHTML = `Wind: ${day4Wind} MPH`;
+  // display current humidity
+  document.getElementById("forecastDay4Humidity").innerHTML = `Humidity: ${day4Humidity} %`;
+
+  // Day 5 Forecast
+  // display current date
+  const day5forecastDate = moment().add(4, "d").format("L");
+  document.getElementById("forecastDay5Date").innerHTML = day5forecastDate;
+  // display weather icon
+  document.getElementById("forecastDay5WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day5WeatherIconId}@2x.png`;
+  // add appropriate alt property to icon image
+  document.getElementById("forecastDay5WeatherIconDisplay").alt = day5WeatherDescription;
+  // display current temperature
+  document.getElementById("forecastDay5Temp").innerHTML = `Temp: ${day5Temp}°F`;
+  // display current wind speed
+  document.getElementById("forecastDay5WindSpeed").innerHTML = `Wind: ${day5Wind} MPH`;
+  // display current humidity
+  document.getElementById("forecastDay5Humidity").innerHTML = `Humidity: ${day5Humidity} %`;
+
+  showContainerById("currentWeatherCard");
+  showContainerById("fiveDayForecast");
 }
 
 // clearCurrentWeatherCard to clear out all strings in Current Weather Card div
@@ -193,6 +354,11 @@ function clearCurrentWeatherCard() {
   document.getElementById("currentWindDisplay").innerHTML = "";
   document.getElementById("currentHumidityDisplay").innerHTML = "";
   document.getElementById("currentUVIndexDisplay").innerHTML = "";
+}
+
+//utility function to show container by id
+function showContainerById(container) {
+  document.getElementById(container).classList.remove("hidden");
 }
 
 //event listeners

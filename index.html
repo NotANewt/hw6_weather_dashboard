@@ -48,9 +48,9 @@
             </aside>
 
             <!-- current day weather card -->
-            <div id=currentWeatherCard class="col-9 py-2">
+            <div id="currentWeatherCard" class="col-9 hidden py-2">
                 <div class="card">
-                    <div class="card-body">
+                    <div id="containerCurrentWeather" class="card-body">
                         <h2 id="currentCityAndDate" class=""><span id=citySpan></span> <span id=dateSpan></span>
                             <img id=currentWeatherIconDisplay src="" alt="">
                         </h2>
@@ -61,43 +61,53 @@
                     </div>
                 </div>
                 <!-- five day forecast -->
-                <div id="fiveDayForecast" class="container p-2">
+                <div id="fiveDayForecast" class="container hidden p-2">
                     <div class="row justify-content-between">
                         <h3 class="ps-0">5-Day Forecast:</h3>
+
                         <!-- forecast day 1 -->
                         <div id="forecastDay1" class="background-end-blue card col-2 text-white">
-                            <p class="pt-1">date</p>
-                            <p>temp</p>
-                            <p>wind</p>
-                            <p>humidity</p>
+                            <p id="forecastDay1Date" class="pt-1"></p>
+                            <img id="forecastDay1WeatherIconDisplay" src="" alt="">
+                            <p id="forecastDay1Temp"></p>
+                            <p id="forecastDay1WindSpeed"></p>
+                            <p id="forecastDay1Humidity"></p>
                         </div>
+
                         <!-- forecast day 2 -->
                         <div id="forecastDay2" class="background-end-blue card col-2 text-white">
-                            <p class="pt-1">date</p>
-                            <p>temp</p>
-                            <p>wind</p>
-                            <p>humidity</p>
+                            <p id="forecastDay2Date" class="pt-1"></p>
+                            <img id="forecastDay2WeatherIconDisplay" src="" alt="">
+                            <p id="forecastDay2Temp"></p>
+                            <p id="forecastDay2WindSpeed"></p>
+                            <p id="forecastDay2Humidity"></p>
                         </div>
+
                         <!-- forecast day 3 -->
                         <div id="forecastDay3" class="background-end-blue card col-2 text-white">
-                            <p class="pt-1">date</p>
-                            <p>temp</p>
-                            <p>wind</p>
-                            <p>humidity</p>
+                            <p id="forecastDay3Date" class="pt-1"></p>
+                            <img id="forecastDay3WeatherIconDisplay" src="" alt="">
+                            <p id="forecastDay3Temp"></p>
+                            <p id="forecastDay3WindSpeed"></p>
+                            <p id="forecastDay3Humidity"></p>
                         </div>
+
                         <!-- forecast day 4 -->
                         <div id="forecastDay4" class="background-end-blue card col-2 text-white">
-                            <p class="pt-1">date</p>
-                            <p>temp</p>
-                            <p>wind</p>
-                            <p>humidity</p>
+                            <p id="forecastDay4Date" class="pt-1"></p>
+                            <img id="forecastDay4WeatherIconDisplay" src="" alt="">
+                            <p id="forecastDay4Temp"></p>
+                            <p id="forecastDay4WindSpeed"></p>
+                            <p id="forecastDay4Humidity"></p>
                         </div>
+
                         <!-- forecast day 5 -->
                         <div id="forecastDay5" class="background-end-blue card col-2 text-white">
-                            <p class="pt-1">date</p>
-                            <p>temp</p>
-                            <p>wind</p>
-                            <p>humidity</p>
+                            <p id="forecastDay5Date" class="pt-1"></p>
+                            <img id="forecastDay5WeatherIconDisplay" src="" alt="">
+                            <p id="forecastDay5Temp"></p>
+                            <p id="forecastDay5WindSpeed"></p>
+                            <p id="forecastDay5Humidity"></p>
                         </div>
 
 
