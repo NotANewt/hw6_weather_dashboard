@@ -1,15 +1,48 @@
 // global variables
 const searchBtn = document.getElementById("searchButton");
+let listOfPreviouslySearchedCities = [];
 
 // initial state
+init();
 
 // clear error response
 document.getElementById("errorDiv").innerHTML = "";
 
-// geolocation to load page with current location's weather
-geoLocation();
-
 // functions
+
+//initialization
+function init() {
+  // check if there are any city names stored in the listOfPreviouslySearchedcities array
+  listOfPreviouslySearchedCities = JSON.parse(localStorage.getItem("savedLocalCities"));
+  if (!listOfPreviouslySearchedCities) {
+    listOfPreviouslySearchedCities = [];
+  }
+  // geolocation to load page with current location's weather
+  geoLocation();
+}
+
+// updateSearchHistoryDisplay - update the search history
+//function updateSearchHistoryDisplay() {
+//empty leaderboardList innerHTML
+//const previousCities = document.getElementById("previousCities");
+//previousCities.innerHTML = "";
+//if there are items in the leaderboard array
+// if (listOfPreviouslySearchedCities.length > 0) {
+//add each initials/score to the leaderboard list
+//listOfPreviouslySearchedCities.forEach(function (city) {
+// create search history button
+//const pastCitySearchButton = document.createElement("button");
+// style button
+// pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
+// add text
+// pastCitySearchButton.innerHTML = listOfPreviouslySearchedCities[city];
+// add id
+// pastCitySearchButton.setAttribute("id", city);
+//append button to previousCities div
+// document.getElementById("previousCities").appendChild(pastCitySearchButton);
+// });
+// }
+//}
 
 // geolocation - get user's current lat and lon
 function geoLocation() {
@@ -82,6 +115,24 @@ function cityNameToLatLon(event) {
   if (cityInput === "") {
     displayError();
   } else {
+    // add city to array of past city searches
+    listOfPreviouslySearchedCities.push(cityInput);
+    // TO DO: If city is already in the array, do not add the city again
+
+    // add city to list of past searches
+    localStorage.setItem("savedLocalCities", JSON.stringify(listOfPreviouslySearchedCities));
+    // create search history button
+    const pastCitySearchButton = document.createElement("button");
+    // style button
+    pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
+    // add text
+    pastCitySearchButton.innerHTML = cityInput;
+    // add id
+    pastCitySearchButton.setAttribute("id", cityInput);
+    //append button to previousCities div
+    document.getElementById("previousCities").appendChild(pastCitySearchButton);
+    console.log(listOfPreviouslySearchedCities);
+
     // create fecth url
     const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
     // fetch
@@ -165,7 +216,7 @@ function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWea
   const currentDate = moment().format("L");
   document.getElementById("dateSpan").innerHTML = currentDate;
   // display weather icon
-  document.getElementById("currentWeatherIconDisplay").src = `https://openweathermap.org/img/wn/${currentWeatherIconId}@2x.png`;
+  document.getElementById("currentWeatherIconDisplay").src = `https://openweathermap.org/img/wn/${currentWeatherIconId}.png`;
   // add appropriate alt property to icon image
   document.getElementById("currentWeatherIconDisplay").alt = currentWeatherDescription;
   // display current temperature
@@ -271,7 +322,7 @@ function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1T
   const day1forecastDate = moment().add(1, "d").format("L");
   document.getElementById("forecastDay1Date").innerHTML = day1forecastDate;
   // display weather icon
-  document.getElementById("forecastDay1WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day1WeatherIconId}@2x.png`;
+  document.getElementById("forecastDay1WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day1WeatherIconId}.png`;
   // add appropriate alt property to icon image
   document.getElementById("forecastDay1WeatherIconDisplay").alt = day1WeatherDescription;
   // display current temperature
@@ -286,7 +337,7 @@ function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1T
   const day2forecastDate = moment().add(2, "d").format("L");
   document.getElementById("forecastDay2Date").innerHTML = day2forecastDate;
   // display weather icon
-  document.getElementById("forecastDay2WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day2WeatherIconId}@2x.png`;
+  document.getElementById("forecastDay2WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day2WeatherIconId}.png`;
   // add appropriate alt property to icon image
   document.getElementById("forecastDay2WeatherIconDisplay").alt = day2WeatherDescription;
   // display current temperature
@@ -301,7 +352,7 @@ function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1T
   const day3forecastDate = moment().add(3, "d").format("L");
   document.getElementById("forecastDay3Date").innerHTML = day3forecastDate;
   // display weather icon
-  document.getElementById("forecastDay3WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day3WeatherIconId}@2x.png`;
+  document.getElementById("forecastDay3WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day3WeatherIconId}.png`;
   // add appropriate alt property to icon image
   document.getElementById("forecastDay3WeatherIconDisplay").alt = day3WeatherDescription;
   // display current temperature
@@ -316,7 +367,7 @@ function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1T
   const day4forecastDate = moment().add(4, "d").format("L");
   document.getElementById("forecastDay4Date").innerHTML = day4forecastDate;
   // display weather icon
-  document.getElementById("forecastDay4WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day4WeatherIconId}@2x.png`;
+  document.getElementById("forecastDay4WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day4WeatherIconId}.png`;
   // add appropriate alt property to icon image
   document.getElementById("forecastDay4WeatherIconDisplay").alt = day4WeatherDescription;
   // display current temperature
@@ -328,10 +379,10 @@ function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1T
 
   // Day 5 Forecast
   // display current date
-  const day5forecastDate = moment().add(4, "d").format("L");
+  const day5forecastDate = moment().add(5, "d").format("L");
   document.getElementById("forecastDay5Date").innerHTML = day5forecastDate;
   // display weather icon
-  document.getElementById("forecastDay5WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day5WeatherIconId}@2x.png`;
+  document.getElementById("forecastDay5WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${day5WeatherIconId}.png`;
   // add appropriate alt property to icon image
   document.getElementById("forecastDay5WeatherIconDisplay").alt = day5WeatherDescription;
   // display current temperature
@@ -341,6 +392,10 @@ function displayForecastResults(day1WeatherIconId, day1WeatherDescription, day1T
   // display current humidity
   document.getElementById("forecastDay5Humidity").innerHTML = `Humidity: ${day5Humidity} %`;
 
+  // clear previously searched city name
+  document.getElementById("formCityNameInput").value = "";
+
+  //show currentWeatherCard and fiveDayForecast
   showContainerById("currentWeatherCard");
   showContainerById("fiveDayForecast");
 }
