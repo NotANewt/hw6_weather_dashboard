@@ -2,13 +2,77 @@
 const searchBtn = document.getElementById("searchButton");
 
 // initial state
-
 // clear error response
 document.getElementById("errorDiv").innerHTML = "";
+// clear current weather card
+clearCurrentWeatherCard();
+
+// geolocation to load page with current location's weather
+geoLocation();
 
 // functions
 
-// cityNameToLatLong
+// geolocation - get user's current lat and lon
+function geoLocation() {
+  // options object with parameters to use in method getCurrentPosition
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  };
+
+  // callback function if geolocation.getCurrentPosition is a success and provides pos object
+  function success(pos) {
+    // variable for coordinates
+    const coordinates = pos.coords;
+    // variables for latitude and longitude from coordinates
+    const currentLat = coordinates.latitude;
+    const currentLon = coordinates.longitude;
+    //get city name from lat/lon
+
+    // call cityNameFromLatLon
+    cityNamefromLatLon(currentLat, currentLon);
+  }
+
+  // if user blocks geolocation, return
+  function error() {
+    return;
+  }
+  // getCurrentPosition method
+  navigator.geolocation.getCurrentPosition(success, error, options);
+}
+
+// cityNameFromLatLon - fetches city name from geolocation latitude and longitude
+function cityNamefromLatLon(currentLat, currentLon) {
+  // create fecth url
+  const fetchUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${currentLat}&lon=${currentLon}&appid=517f19dc586407c39701b016a6edf914`;
+
+  // fetch
+  fetch(fetchUrl)
+    .then(function (response) {
+      console.log();
+      return response.json();
+    })
+    .then(function (data) {
+      // if received a 404 error message for city not found
+      if (data.cod === "404") {
+        // call displayError function
+        displayError();
+      } else {
+        // if no error message
+        // variable for city name
+        const cityName = data[0].name;
+        // variable for latitude
+        const latitude = data[0].lat;
+        // variable for longitude
+        const longitude = data[0].lon;
+        // call currentWeatherResults and send cityName, latitude, and longitude
+        handleCurrentWeatherResults(cityName, latitude, longitude);
+      }
+    });
+}
+
+// cityNameToLatLon
 function cityNameToLatLon(event) {
   //prevent default
   event.preventDefault();
@@ -49,8 +113,8 @@ function cityNameToLatLon(event) {
   }
 }
 
-// handleResults
-function handleResults(cityName, latitude, longitude) {
+// handleResults - takes city name, latitude, and longitude from cityNameFromLatLon (geolocation) or cityNameToLatLon
+function handleCurrentWeatherResults(cityName, latitude, longitude) {
   // create fecth url
   const fetchUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=517f19dc586407c39701b016a6edf914`;
 
