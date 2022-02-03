@@ -75,36 +75,25 @@ function cityNamefromLatLon(currentLat, currentLon) {
 }
 
 // cityNameToLatLon
-function cityNameToLatLon(event) {
+function searchForWeather(event) {
+  let latitude = "";
+  let longitude = "";
+  let cityInput = "";
+  let cityName = "";
   //prevent default
   event.preventDefault();
   // clear error response
   document.getElementById("errorDiv").innerHTML = "";
   // grab search text from input
-  const cityInput = document.getElementById("formCityNameInput").value.toLowerCase();
+  if (event.target.name != "cityButton") {
+    cityInput = document.getElementById("formCityNameInput").value.toLowerCase();
+  } else {
+    cityInput = event.target.id;
+  }
   // if input box is blank, call displayError function
   if (cityInput === "") {
     displayError();
   } else {
-    // if the city name is not already in the listOfPreviouslySearchedCities array
-    if (!listOfPreviouslySearchedCities.includes(cityInput)) {
-      // add city to array of past city searches
-      listOfPreviouslySearchedCities.push(cityInput);
-      // add city to list of past searches
-      localStorage.setItem("savedLocalCities", JSON.stringify(listOfPreviouslySearchedCities));
-      // create search history button
-      const pastCitySearchButton = document.createElement("button");
-      // style button
-      pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
-      // add text
-      pastCitySearchButton.innerHTML = cityInput;
-      // add id
-      pastCitySearchButton.setAttribute("id", cityInput);
-      //append button to previousCities div
-      document.getElementById("previousCities").appendChild(pastCitySearchButton);
-      console.log(listOfPreviouslySearchedCities);
-    }
-
     // create fecth url
     const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
     // fetch
@@ -120,15 +109,42 @@ function cityNameToLatLon(event) {
         } else {
           // if no error message
           // variable for city name
-          const cityName = data[0].name;
+          cityName = data[0].name;
           // variable for latitude
-          const latitude = data[0].lat;
+          latitude = data[0].lat;
           // variable for longitude
-          const longitude = data[0].lon;
+          longitude = data[0].lon;
           //call handleCurrentWeatherResults and send city name, latitude, and longitude
           handleCurrentWeatherResults(cityName, latitude, longitude);
         }
       });
+  }
+  // make the button
+  // if the city name is not already in the listOfPreviouslySearchedCities array
+  if (!listOfPreviouslySearchedCities.includes(cityInput)) {
+    // add city to array of past city searches
+    listOfPreviouslySearchedCities.push(cityInput);
+    // add city to list of past searches
+    localStorage.setItem("savedLocalCities", JSON.stringify(listOfPreviouslySearchedCities));
+    // create search history button
+    const pastCitySearchButton = document.createElement("button");
+    // style button
+    pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
+    // add text
+    pastCitySearchButton.innerHTML = cityInput;
+    // add id
+    pastCitySearchButton.setAttribute("id", cityInput);
+    // add data attribute for latitude
+    pastCitySearchButton.setAttribute("data-lat", latitude);
+    // add data attribute for longitude
+    pastCitySearchButton.setAttribute("data-lon", longitude);
+    // name the button
+    pastCitySearchButton.setAttribute("name", "cityButton");
+    // add event listener
+    pastCitySearchButton.addEventListener("click", searchForWeather, cityInput);
+    //append button to previousCities div
+    document.getElementById("previousCities").appendChild(pastCitySearchButton);
+    console.log(listOfPreviouslySearchedCities);
   }
 }
 
@@ -291,6 +307,6 @@ function showContainerById(container) {
 //on page load, show any past cities searched from local storage
 
 //search for city button click
-searchBtn.addEventListener("click", cityNameToLatLon);
+searchBtn.addEventListener("click", searchForWeather);
 
 //click on recent city searches to show weather
