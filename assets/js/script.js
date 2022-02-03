@@ -81,28 +81,29 @@ function cityNameToLatLon(event) {
   // clear error response
   document.getElementById("errorDiv").innerHTML = "";
   // grab search text from input
-  const cityInput = document.getElementById("formCityNameInput").value;
+  const cityInput = document.getElementById("formCityNameInput").value.toLowerCase();
   // if input box is blank, call displayError function
   if (cityInput === "") {
     displayError();
   } else {
-    // add city to array of past city searches
-    listOfPreviouslySearchedCities.push(cityInput);
-    // TO DO: If city is already in the array, do not add the city again
-
-    // add city to list of past searches
-    localStorage.setItem("savedLocalCities", JSON.stringify(listOfPreviouslySearchedCities));
-    // create search history button
-    const pastCitySearchButton = document.createElement("button");
-    // style button
-    pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
-    // add text
-    pastCitySearchButton.innerHTML = cityInput;
-    // add id
-    pastCitySearchButton.setAttribute("id", cityInput);
-    //append button to previousCities div
-    document.getElementById("previousCities").appendChild(pastCitySearchButton);
-    console.log(listOfPreviouslySearchedCities);
+    // if the city name is not already in the listOfPreviouslySearchedCities array
+    if (!listOfPreviouslySearchedCities.includes(cityInput)) {
+      // add city to array of past city searches
+      listOfPreviouslySearchedCities.push(cityInput);
+      // add city to list of past searches
+      localStorage.setItem("savedLocalCities", JSON.stringify(listOfPreviouslySearchedCities));
+      // create search history button
+      const pastCitySearchButton = document.createElement("button");
+      // style button
+      pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
+      // add text
+      pastCitySearchButton.innerHTML = cityInput;
+      // add id
+      pastCitySearchButton.setAttribute("id", cityInput);
+      //append button to previousCities div
+      document.getElementById("previousCities").appendChild(pastCitySearchButton);
+      console.log(listOfPreviouslySearchedCities);
+    }
 
     // create fecth url
     const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
