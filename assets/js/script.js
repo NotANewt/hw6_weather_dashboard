@@ -1,5 +1,6 @@
 // global variables
 const searchBtn = document.getElementById("searchButton");
+let prevSearchedCityButton = document.getElementsByName("cityButton");
 let listOfPreviouslySearchedCities = [];
 
 // initial state
@@ -11,10 +12,33 @@ init();
 function init() {
   // clear error response
   document.getElementById("errorDiv").innerHTML = "";
-  // geolocation to load page with current location's weather
+  // call geolocation to load page with current location's weather
   geoLocation();
+
   // TODO: get items from local storage and send to makebuttonsFromLocalStorage
   // makeButtonsFromLocalStorage();
+}
+
+// handleSearchButtonClick - handle button click
+function handleSearchButtonClick(event) {
+  //prevent default
+  event.preventDefault();
+  // clear error response
+  document.getElementById("errorDiv").innerHTML = "";
+  // grab search text from input
+  if (event.target.name != "cityButton") {
+    cityInput = document.getElementById("formCityNameInput").value.toLowerCase();
+  } else {
+    cityInput = event.target.id;
+  }
+  // if input box is blank, call displayError function and return
+  if (cityInput === "") {
+    displayError();
+    return;
+  } else {
+    // call searchForWeather and send cityInput
+    searchForWeather(cityInput);
+  }
 }
 
 // TODO: Make a function to make buttons from local storage
@@ -82,55 +106,35 @@ function cityNamefromLatLon(currentLat, currentLon) {
     });
 }
 
-// cityNameToLatLon
-function searchForWeather(event) {
-  let latitude = "";
-  let longitude = "";
-  let cityInput = "";
-  let cityName = "";
-  //prevent default
-  event.preventDefault();
-  // clear error response
-  document.getElementById("errorDiv").innerHTML = "";
-  // grab search text from input
-  if (event.target.name != "cityButton") {
-    cityInput = document.getElementById("formCityNameInput").value.toLowerCase();
-  } else {
-    cityInput = event.target.id;
-  }
-  // if input box is blank, call displayError function and return
-  if (cityInput === "") {
-    displayError();
-    return;
-  } else {
-    // create fecth url
-    const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
-    // fetch
-    fetch(fetchUrl)
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        // if data is an empty array (if OpenWeather is sent a city name that does not exist, it sends an empty array)
-        if (data.length === 0) {
-          // call displayError function and return
-          displayError();
-          return;
-        } else {
-          // if the array is not empty, so it had data from an actual city get the city name, latitude, and longitude
-          // variable for city name
-          cityName = data[0].name;
-          // variable for latitude
-          latitude = data[0].lat;
-          // variable for longitude
-          longitude = data[0].lon;
-          //call handleCurrentWeatherResults and send city name, latitude, and longitude
-          handleCurrentWeatherResults(cityName, latitude, longitude);
-          // call makeTheButton to generate the button
-          makeTheButton(cityName, latitude, longitude);
-        }
-      });
-  }
+// searchForWeather - fetch weather data for cityInput
+function searchForWeather(cityInput) {
+  // create fecth url
+  const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
+  // fetch
+  fetch(fetchUrl)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      // if data is an empty array (if OpenWeather is sent a city name that does not exist, it sends an empty array)
+      if (data.length === 0) {
+        // call displayError function and return
+        displayError();
+        return;
+      } else {
+        // if the array is not empty, so it had data from an actual city get the city name, latitude, and longitude
+        // variable for city name
+        cityName = data[0].name;
+        // variable for latitude
+        latitude = data[0].lat;
+        // variable for longitude
+        longitude = data[0].lon;
+        //call handleCurrentWeatherResults and send city name, latitude, and longitude
+        handleCurrentWeatherResults(cityName, latitude, longitude);
+        // call makeTheButton to generate the button
+        makeTheButton(cityName, latitude, longitude);
+      }
+    });
 }
 
 // makeTheButton
@@ -148,9 +152,9 @@ function makeTheButton(cityName, latitude, longitude) {
     const pastCitySearchButton = document.createElement("button");
     // style button
     pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
-    // add text
+    // add text to button
     pastCitySearchButton.innerHTML = cityName;
-    // add id
+    // add id to button
     pastCitySearchButton.setAttribute("id", cityName);
     // add data attribute for latitude
     pastCitySearchButton.setAttribute("data-lat", latitude);
@@ -158,11 +162,19 @@ function makeTheButton(cityName, latitude, longitude) {
     pastCitySearchButton.setAttribute("data-lon", longitude);
     // name the button
     pastCitySearchButton.setAttribute("name", "cityButton");
-    // add event listener
-    pastCitySearchButton.addEventListener("click", searchForWeather, cityName);
+    // add event listener to call handleSearchedButtonClick
+    pastCitySearchButton.addEventListener("click", handleSearchedCityButtonClick);
     //append button to previousCities div
     document.getElementById("previousCities").appendChild(pastCitySearchButton);
   }
+}
+
+// handleSearchedCityButtonClick - handle the click event of a previously searched city button
+function handleSearchedCityButtonClick() {
+  // variable for city name
+  cityInput = this.getAttribute("id");
+  // call searchForWeather and send city name (cityInput)
+  searchForWeather(cityInput);
 }
 
 // handleCurrentWeatherResults - takes city name, latitude, and longitude from cityNameFromLatLon (geolocation) or cityNameToLatLon
@@ -323,4 +335,4 @@ function showContainerById(container) {
 //event listeners
 
 //search for city button click
-searchBtn.addEventListener("click", searchForWeather);
+searchBtn.addEventListener("click", handleSearchButtonClick);
