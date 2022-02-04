@@ -309,7 +309,7 @@ function displayForecastResults(x, forecastWeatherIconId, forecastWeatherDescrip
   const forecastDate = moment().add(x, "d").format("L");
   document.getElementById("forecastDay" + x + "Date").innerHTML = forecastDate;
   // display weather icon
-  document.getElementById("forecastDay" + x + "WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${forecastWeatherIconId}.png`;
+  document.getElementById("forecastDay" + x + "WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${forecastWeatherIconId}@2x.png`;
   // add appropriate alt property to icon image
   document.getElementById("forecastDay" + x + "WeatherIconDisplay").alt = forecastWeatherDescription;
   // display current temperature
