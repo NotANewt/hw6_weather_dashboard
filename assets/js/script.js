@@ -93,6 +93,7 @@ function searchForWeather(event) {
   // if input box is blank, call displayError function
   if (cityInput === "") {
     displayError();
+    return;
   } else {
     // create fecth url
     const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
@@ -102,10 +103,11 @@ function searchForWeather(event) {
         return response.json();
       })
       .then(function (data) {
-        // if received a 404 error message for city not found
-        if (data.cod === "404") {
-          // call displayError function
+        // if data is an empty array
+        if (data.length === 0) {
+          // call displayError function and return
           displayError();
+          return;
         } else {
           // if no error message
           // variable for city name
@@ -116,24 +118,28 @@ function searchForWeather(event) {
           longitude = data[0].lon;
           //call handleCurrentWeatherResults and send city name, latitude, and longitude
           handleCurrentWeatherResults(cityName, latitude, longitude);
+          // call makeTheButton to generate the button
+          makeTheButton(cityName, latitude, longitude);
         }
       });
   }
+}
+
+// makeTheButton
+function makeTheButton(cityName, latitude, longitude) {
   // make the button
   // if the city name is not already in the listOfPreviouslySearchedCities array
-  if (!listOfPreviouslySearchedCities.includes(cityInput)) {
+  if (!listOfPreviouslySearchedCities.includes(cityName)) {
     // add city to array of past city searches
-    listOfPreviouslySearchedCities.push(cityInput);
-    // add city to list of past searches
-    localStorage.setItem("savedLocalCities", JSON.stringify(listOfPreviouslySearchedCities));
+    listOfPreviouslySearchedCities.push(cityName);
     // create search history button
     const pastCitySearchButton = document.createElement("button");
     // style button
     pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
     // add text
-    pastCitySearchButton.innerHTML = cityInput;
+    pastCitySearchButton.innerHTML = cityName;
     // add id
-    pastCitySearchButton.setAttribute("id", cityInput);
+    pastCitySearchButton.setAttribute("id", cityName);
     // add data attribute for latitude
     pastCitySearchButton.setAttribute("data-lat", latitude);
     // add data attribute for longitude
@@ -141,10 +147,9 @@ function searchForWeather(event) {
     // name the button
     pastCitySearchButton.setAttribute("name", "cityButton");
     // add event listener
-    pastCitySearchButton.addEventListener("click", searchForWeather, cityInput);
+    pastCitySearchButton.addEventListener("click", searchForWeather, cityName);
     //append button to previousCities div
     document.getElementById("previousCities").appendChild(pastCitySearchButton);
-    console.log(listOfPreviouslySearchedCities);
   }
 }
 
@@ -190,6 +195,8 @@ function displayError() {
   document.getElementById("errorDiv").innerHTML = "";
   // display error response
   document.getElementById("errorDiv").innerHTML = "Please enter a city.";
+  // return
+  return;
 }
 
 // displayCurrentResults
