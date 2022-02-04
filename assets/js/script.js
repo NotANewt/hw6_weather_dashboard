@@ -13,7 +13,16 @@ function init() {
   document.getElementById("errorDiv").innerHTML = "";
   // geolocation to load page with current location's weather
   geoLocation();
+  // TODO: get items from local storage and send to makebuttonsFromLocalStorage
+  // makeButtonsFromLocalStorage();
 }
+
+// TODO: Make a function to make buttons from local storage
+// function makeButtonsFromLocalStorage() {
+//   listOfPreviouslySearchedCities = JSON.parse(localStorage.getItem("savedLocalCitySearches")) || [];
+//   console.log(listOfPreviouslySearchedCities);
+//   listOfPreviouslySearchedCities.forEach(searchForWeather);
+// }
 
 // geolocation - get user's current lat and lon
 function geoLocation() {
@@ -131,6 +140,10 @@ function makeTheButton(cityName, latitude, longitude) {
   if (!listOfPreviouslySearchedCities.includes(cityName)) {
     // add city to array of past city searches
     listOfPreviouslySearchedCities.push(cityName);
+
+    // save array to local storage
+    localStorage.setItem("savedLocalCitySearches", JSON.stringify(listOfPreviouslySearchedCities));
+
     // create search history button
     const pastCitySearchButton = document.createElement("button");
     // style button
