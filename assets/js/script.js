@@ -49,7 +49,6 @@ function geoLocation() {
 function cityNamefromLatLon(currentLat, currentLon) {
   // create fecth url
   const fetchUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${currentLat}&lon=${currentLon}&appid=517f19dc586407c39701b016a6edf914`;
-
   // fetch
   fetch(fetchUrl)
     .then(function (response) {
@@ -90,7 +89,7 @@ function searchForWeather(event) {
   } else {
     cityInput = event.target.id;
   }
-  // if input box is blank, call displayError function
+  // if input box is blank, call displayError function and return
   if (cityInput === "") {
     displayError();
     return;
@@ -103,13 +102,13 @@ function searchForWeather(event) {
         return response.json();
       })
       .then(function (data) {
-        // if data is an empty array
+        // if data is an empty array (if OpenWeather is sent a city name that does not exist, it sends an empty array)
         if (data.length === 0) {
           // call displayError function and return
           displayError();
           return;
         } else {
-          // if no error message
+          // if the array is not empty, so it had data from an actual city get the city name, latitude, and longitude
           // variable for city name
           cityName = data[0].name;
           // variable for latitude
@@ -195,6 +194,8 @@ function displayError() {
   document.getElementById("errorDiv").innerHTML = "";
   // display error response
   document.getElementById("errorDiv").innerHTML = "Please enter a city.";
+  // clear previously searched city name
+  document.getElementById("formCityNameInput").value = "";
   // return
   return;
 }
@@ -255,12 +256,11 @@ function handleForecastWeatherResults(latitude, longitude) {
           const forecastWind = data.daily[x].wind_speed;
           //variable for Humidity
           const forecastHumidity = data.daily[x].humidity;
+          // call displayForecastResults function and send it variables
           displayForecastResults(x, forecastWeatherIconId, forecastWeatherDescription, forecastTemp, forecastWind, forecastHumidity);
-
+          // add 1 to x to move to next day
           x++;
         }
-
-        // call displayForecastResults for each forecast day and send it weather information for that day
       }
     });
 }
@@ -269,7 +269,6 @@ function handleForecastWeatherResults(latitude, longitude) {
 function displayForecastResults(x, forecastWeatherIconId, forecastWeatherDescription, forecastTemp, forecastWind, forecastHumidity) {
   // clear existing error
   document.getElementById("errorDiv").innerHTML = "";
-
   // Day 1 Forecast
   // display current date
   const forecastDate = moment().add(x, "d").format("L");
@@ -284,7 +283,6 @@ function displayForecastResults(x, forecastWeatherIconId, forecastWeatherDescrip
   document.getElementById("forecastDay" + x + "WindSpeed").innerHTML = `Wind: ${forecastWind} MPH`;
   // display current humidity
   document.getElementById("forecastDay" + x + "Humidity").innerHTML = `Humidity: ${forecastHumidity} %`;
-
   // clear previously searched city name
   document.getElementById("formCityNameInput").value = "";
 
@@ -311,9 +309,5 @@ function showContainerById(container) {
 
 //event listeners
 
-//on page load, show any past cities searched from local storage
-
 //search for city button click
 searchBtn.addEventListener("click", searchForWeather);
-
-//click on recent city searches to show weather
