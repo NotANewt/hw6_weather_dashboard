@@ -1,6 +1,8 @@
 // global variables
 const searchBtn = document.getElementById("searchButton");
 const formCityInput = document.getElementById("formCityNameInput");
+const uvLowMax = 3;
+const uvModMax = 6;
 let prevSearchedCityButton = document.getElementsByName("cityButton");
 let listOfPreviouslySearchedCities = [];
 
@@ -41,7 +43,6 @@ function handleSearchButtonClick(event) {
 function makeButtonsFromLocalStorage() {
   document.getElementById("previousCities").innerHTML = "";
   listOfPreviouslySearchedCities = JSON.parse(localStorage.getItem("savedLocalCitySearches")) || [];
-  console.log(listOfPreviouslySearchedCities);
   listOfPreviouslySearchedCities.forEach(makeTheButton);
 }
 
@@ -222,6 +223,8 @@ function displayError() {
 function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI, latitude, longitude) {
   // clear existing strings
   clearCurrentWeatherCard();
+  // remove existing UV background color
+  removeUVIBackgroundColor();
   // clear existing error
   document.getElementById("errorDiv").innerHTML = "";
   // display city name
@@ -240,12 +243,26 @@ function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWea
   // display current humidity
   document.getElementById("currentHumidityDisplay").innerHTML = `Humidity: ${currentHumidity} %`;
   // display current UV Index
-  document.getElementById("currentUVIndexDisplay").innerHTML = `UV Index: ${currentUVI}`;
+  document.getElementById("currentUVIndexDisplay").innerHTML = `${currentUVI}`;
+
+  // set background color for UVI
+  if (currentUVI < uvLowMax) {
+    document.getElementById("currentUVIndexDisplay").classList.add("bg-success");
+  } else if (currentUVI < uvModMax) {
+    document.getElementById("currentUVIndexDisplay").classList.add("bg-warning");
+  } else {
+    document.getElementById("currentUVIndexDisplay").classList.add("bg-danger");
+  }
+
   //call handleForecastWeatherResults and send latitude and longitude
   handleForecastWeatherResults(latitude, longitude);
 }
 
-//handleForecastWeatherResults
+/*
+ * Habjhgsdjfgsdf sdjhgfj sdhgf
+ * kjhsdkj hsdfkjh sdfkh sdfkjh sdkh fsdkhfs dkj dhskjjhsd fksdh f
+ * k ksjhdkfsjhdfkh f
+ */
 function handleForecastWeatherResults(latitude, longitude) {
   // create fecth url
   const fetchUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=517f19dc586407c39701b016a6edf914`;
@@ -318,6 +335,13 @@ function clearCurrentWeatherCard() {
   document.getElementById("currentWindDisplay").innerHTML = "";
   document.getElementById("currentHumidityDisplay").innerHTML = "";
   document.getElementById("currentUVIndexDisplay").innerHTML = "";
+}
+
+// remove background color of UVI span
+function removeUVIBackgroundColor() {
+  document.getElementById("currentUVIndexDisplay").classList.remove("bg-success");
+  document.getElementById("currentUVIndexDisplay").classList.remove("bg-warning");
+  document.getElementById("currentUVIndexDisplay").classList.remove("bg-danger");
 }
 
 //utility function to show container by id
