@@ -1,5 +1,6 @@
 // global variables
 const searchBtn = document.getElementById("searchButton");
+const formCityInput = document.getElementById("formCityNameInput");
 let prevSearchedCityButton = document.getElementsByName("cityButton");
 let listOfPreviouslySearchedCities = [];
 
@@ -14,23 +15,18 @@ function init() {
   document.getElementById("errorDiv").innerHTML = "";
   // call geolocation to load page with current location's weather
   geoLocation();
-
-  // TODO: get items from local storage and send to makebuttonsFromLocalStorage
-  // makeButtonsFromLocalStorage();
+  // call makeButtonsFromLocalStorage
+  makeButtonsFromLocalStorage();
 }
 
 // handleSearchButtonClick - handle button click
 function handleSearchButtonClick(event) {
   //prevent default
   event.preventDefault();
-  // clear error response
+  // clear error response TODO: MAKE A FUNCTION FOR THIS
   document.getElementById("errorDiv").innerHTML = "";
   // grab search text from input
-  if (event.target.name != "cityButton") {
-    cityInput = document.getElementById("formCityNameInput").value.toLowerCase();
-  } else {
-    cityInput = event.target.id;
-  }
+  cityInput = formCityInput.value.toLowerCase();
   // if input box is blank, call displayError function and return
   if (cityInput === "") {
     displayError();
@@ -41,12 +37,13 @@ function handleSearchButtonClick(event) {
   }
 }
 
-// TODO: Make a function to make buttons from local storage
-// function makeButtonsFromLocalStorage() {
-//   listOfPreviouslySearchedCities = JSON.parse(localStorage.getItem("savedLocalCitySearches")) || [];
-//   console.log(listOfPreviouslySearchedCities);
-//   listOfPreviouslySearchedCities.forEach(searchForWeather);
-// }
+// makeButtonsFromLocalStorage - get previously searched cities array from local storage and make buttons
+function makeButtonsFromLocalStorage() {
+  document.getElementById("previousCities").innerHTML = "";
+  listOfPreviouslySearchedCities = JSON.parse(localStorage.getItem("savedLocalCitySearches")) || [];
+  console.log(listOfPreviouslySearchedCities);
+  listOfPreviouslySearchedCities.forEach(makeTheButton);
+}
 
 // geolocation - get user's current lat and lon
 function geoLocation() {
@@ -131,42 +128,38 @@ function searchForWeather(cityInput) {
         longitude = data[0].lon;
         //call handleCurrentWeatherResults and send city name, latitude, and longitude
         handleCurrentWeatherResults(cityName, latitude, longitude);
-        // call makeTheButton to generate the button
-        makeTheButton(cityName, latitude, longitude);
+        // check to see if the city name is already in the array
+        // if the city name is not already in the listOfPreviouslySearchedCities array
+        if (!listOfPreviouslySearchedCities.includes(cityName)) {
+          // add city to start of array of past city searches
+          listOfPreviouslySearchedCities.unshift(cityName);
+          // remove last city from array if longer than 8
+          if (listOfPreviouslySearchedCities.length > 8) listOfPreviouslySearchedCities.length = 8;
+          // save array to local storage
+          localStorage.setItem("savedLocalCitySearches", JSON.stringify(listOfPreviouslySearchedCities));
+          // make buttons from local storage
+          makeButtonsFromLocalStorage();
+        }
       }
     });
 }
 
 // makeTheButton
-function makeTheButton(cityName, latitude, longitude) {
-  // make the button
-  // if the city name is not already in the listOfPreviouslySearchedCities array
-  if (!listOfPreviouslySearchedCities.includes(cityName)) {
-    // add city to array of past city searches
-    listOfPreviouslySearchedCities.push(cityName);
-
-    // save array to local storage
-    localStorage.setItem("savedLocalCitySearches", JSON.stringify(listOfPreviouslySearchedCities));
-
-    // create search history button
-    const pastCitySearchButton = document.createElement("button");
-    // style button
-    pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
-    // add text to button
-    pastCitySearchButton.innerHTML = cityName;
-    // add id to button
-    pastCitySearchButton.setAttribute("id", cityName);
-    // add data attribute for latitude
-    pastCitySearchButton.setAttribute("data-lat", latitude);
-    // add data attribute for longitude
-    pastCitySearchButton.setAttribute("data-lon", longitude);
-    // name the button
-    pastCitySearchButton.setAttribute("name", "cityButton");
-    // add event listener to call handleSearchedButtonClick
-    pastCitySearchButton.addEventListener("click", handleSearchedCityButtonClick);
-    //append button to previousCities div
-    document.getElementById("previousCities").appendChild(pastCitySearchButton);
-  }
+function makeTheButton(cityName) {
+  // create search history button
+  const pastCitySearchButton = document.createElement("button");
+  // style button
+  pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
+  // add text to button
+  pastCitySearchButton.innerHTML = cityName;
+  // add id to button
+  pastCitySearchButton.setAttribute("id", cityName);
+  // name the button
+  pastCitySearchButton.setAttribute("name", "cityButton");
+  // add event listener to call handleSearchedButtonClick
+  pastCitySearchButton.addEventListener("click", handleSearchedCityButtonClick);
+  //append button to previousCities div
+  document.getElementById("previousCities").appendChild(pastCitySearchButton);
 }
 
 // handleSearchedCityButtonClick - handle the click event of a previously searched city button
