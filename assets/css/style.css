@@ -21,3 +21,8 @@ body {
 .btn {
   text-transform: capitalize;
 }
+
+.no-text-decor {
+  text-decoration: none;
+  color: white;
+}
