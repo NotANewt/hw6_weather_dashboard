@@ -130,7 +130,6 @@ function cityNameFromLatLon(currentLat, currentLon) {
     * save array to local storage
     * call makeButtonsFromLocalStorage function
 */
-
 function searchForWeather(cityInput) {
   const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
 
