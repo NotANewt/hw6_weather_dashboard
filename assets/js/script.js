@@ -11,241 +11,255 @@ init();
 
 // functions
 
-//initialization
+/*
+ Initialization
+  sets what the user sees upon opening the app
+    * calls clearErrorMessage to remove string from error response div
+    * calls geoLocation function to load page with current location's weather
+    * calls makeButtonsFromLocalStorage function to make a button for each previously searched city
+*/
 function init() {
-  // clear error response
-  document.getElementById("errorDiv").innerHTML = "";
-  // call geolocation to load page with current location's weather
+  clearErrorMessage();
   geoLocation();
-  // call makeButtonsFromLocalStorage
   makeButtonsFromLocalStorage();
 }
 
-// handleSearchButtonClick - handle button click
+/*
+ handleSearchButtonClick
+  handles when the search button is clicked
+    * prevents default
+    * calls clearErrorMessage to remove string from error response div
+    * grabs city name from search input
+    * if the input box was blank, calls displayError function and returns
+    * if the input box text, calls searchForWeather function and sends the text as cityInput    
+*/
 function handleSearchButtonClick(event) {
-  //prevent default
   event.preventDefault();
-  // clear error response TODO: MAKE A FUNCTION FOR THIS
-  document.getElementById("errorDiv").innerHTML = "";
-  // grab search text from input
+  clearErrorMessage();
   cityInput = formCityInput.value.toLowerCase();
-  // if input box is blank, call displayError function and return
   if (cityInput === "") {
     displayError();
     return;
   } else {
-    // call searchForWeather and send cityInput
     searchForWeather(cityInput);
   }
 }
 
-// makeButtonsFromLocalStorage - get previously searched cities array from local storage and make buttons
+/*
+ makeButtonsFromLocalStorage
+  gets array of previously searched cities from local storage and prepares the data so that 
+  a button can be generated for each city 
+    * clears out the list of previous cities
+    * parses the array of previously searched cities from local storage
+    * forEach to loop through array of previously searched cities and send each city name to the makeTheButton function
+*/
 function makeButtonsFromLocalStorage() {
   document.getElementById("previousCities").innerHTML = "";
   listOfPreviouslySearchedCities = JSON.parse(localStorage.getItem("savedLocalCitySearches")) || [];
   listOfPreviouslySearchedCities.forEach(makeTheButton);
 }
 
-// geolocation - get user's current lat and lon
+/*
+ geoLocation
+  gets the user's current latitude and longitude coordinates
+    * if user shares location information, gets latitude and longitude coordinates and sends to cityNameFromLatLon function
+    * if user blocks location information, return
+    * getCurrentLocation method for geolocation
+*/
 function geoLocation() {
-  // options object with parameters to use in method getCurrentPosition
   const options = {
     enableHighAccuracy: true,
     timeout: 5000,
     maximumAge: 0,
   };
 
-  // callback function if geolocation.getCurrentPosition is a success and provides pos object
   function success(pos) {
-    // variable for coordinates
     const coordinates = pos.coords;
-    // variables for latitude and longitude from coordinates
     const currentLat = coordinates.latitude;
     const currentLon = coordinates.longitude;
-    //get city name from lat/lon
-
-    // call cityNameFromLatLon
-    cityNamefromLatLon(currentLat, currentLon);
+    cityNameFromLatLon(currentLat, currentLon);
   }
 
-  // if user blocks geolocation, return
   function error() {
     return;
   }
-  // getCurrentPosition method
+
   navigator.geolocation.getCurrentPosition(success, error, options);
 }
 
-// cityNameFromLatLon - fetches city name from geolocation latitude and longitude
-function cityNamefromLatLon(currentLat, currentLon) {
-  // create fecth url
+/*
+ cityNameFromLatLon
+  fetches city name from geolocation latitude and longitude
+    * creates fetchUrl
+    * fetch data from openweathermap geolocation api
+    * data validation: if there is a 404 error for city not found, call displayError function
+    * if there are no errors, create variables and assign data for city name, latitude, and longitude
+    * calls currentWeatherResults and sends cityName, latitude, and longitude
+*/
+function cityNameFromLatLon(currentLat, currentLon) {
   const fetchUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${currentLat}&lon=${currentLon}&appid=517f19dc586407c39701b016a6edf914`;
-  // fetch
+
   fetch(fetchUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-      // if received a 404 error message for city not found
       if (data.cod === "404") {
-        // call displayError function
         displayError();
       } else {
-        // if no error message
-        // variable for city name
         const cityName = data[0].name;
-        // variable for latitude
         const latitude = data[0].lat;
-        // variable for longitude
         const longitude = data[0].lon;
-        // call currentWeatherResults and send cityName, latitude, and longitude
+
         handleCurrentWeatherResults(cityName, latitude, longitude);
       }
     });
 }
 
-// searchForWeather - fetch weather data for cityInput
+/*
+ searchForWeather
+  fetches weather data for cityInput
+    * creates fetchUrl
+    * fetch data from openweathermap geolocation api
+    * data validation: if returns an empty array, the city name does not exist, so call displayError function and return
+    * if the array is not empty, create variables and assign data for city name, latitude, and longitude
+    * calls handleCurrentWeatherResults and sends city name, latitude, and longitude
+    * checks to see if the city name is already in the array
+    * if the city name is not already in the listOfPreviouslySearchedCities array, add it to the start of the array
+    * if the array is longer than eight cities, remove last city
+    * save array to local storage
+    * call makeButtonsFromLocalStorage function
+*/
+
 function searchForWeather(cityInput) {
-  // create fecth url
   const fetchUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&appid=517f19dc586407c39701b016a6edf914`;
-  // fetch
+
   fetch(fetchUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-      // if data is an empty array (if OpenWeather is sent a city name that does not exist, it sends an empty array)
       if (data.length === 0) {
-        // call displayError function and return
         displayError();
         return;
       } else {
-        // if the array is not empty, so it had data from an actual city get the city name, latitude, and longitude
-        // variable for city name
         cityName = data[0].name;
-        // variable for latitude
         latitude = data[0].lat;
-        // variable for longitude
         longitude = data[0].lon;
-        //call handleCurrentWeatherResults and send city name, latitude, and longitude
         handleCurrentWeatherResults(cityName, latitude, longitude);
-        // check to see if the city name is already in the array
-        // if the city name is not already in the listOfPreviouslySearchedCities array
+
         if (!listOfPreviouslySearchedCities.includes(cityName)) {
-          // add city to start of array of past city searches
           listOfPreviouslySearchedCities.unshift(cityName);
-          // remove last city from array if longer than 8
           if (listOfPreviouslySearchedCities.length > 8) listOfPreviouslySearchedCities.length = 8;
-          // save array to local storage
           localStorage.setItem("savedLocalCitySearches", JSON.stringify(listOfPreviouslySearchedCities));
-          // make buttons from local storage
           makeButtonsFromLocalStorage();
         }
       }
     });
 }
 
-// makeTheButton
+/*
+ makeTheButton
+  creates button for each searched city
+    * creates the button element
+    * adds style, text, and an id to the button
+    * names the button "cityButton"
+    * adds event listener to call handleSearchedButtonClick
+    * appends button to previousCities div
+*/
 function makeTheButton(cityName) {
-  // create search history button
   const pastCitySearchButton = document.createElement("button");
-  // style button
   pastCitySearchButton.classList.add("btn", "background-color-medium-purple", "d-block", "mb-2", "text-white");
-  // add text to button
   pastCitySearchButton.innerHTML = cityName;
-  // add id to button
   pastCitySearchButton.setAttribute("id", cityName);
-  // name the button
   pastCitySearchButton.setAttribute("name", "cityButton");
-  // add event listener to call handleSearchedButtonClick
   pastCitySearchButton.addEventListener("click", handleSearchedCityButtonClick);
-  //append button to previousCities div
   document.getElementById("previousCities").appendChild(pastCitySearchButton);
 }
 
-// handleSearchedCityButtonClick - handle the click event of a previously searched city button
+/*
+ handleSearchedCityButtonClick
+  handles the click event of a previously searched city button
+    * gets the city name from the id of the button clicked
+    * calls searchForWeather function and sends it the city name (cityInput)
+*/
 function handleSearchedCityButtonClick() {
-  // variable for city name
   cityInput = this.getAttribute("id");
-  // call searchForWeather and send city name (cityInput)
   searchForWeather(cityInput);
 }
 
-// handleCurrentWeatherResults - takes city name, latitude, and longitude from cityNameFromLatLon (geolocation) or cityNameToLatLon
+/*
+ handleCurrentWeatherResults 
+  fetches current weather results using city name, latitude and longitude
+    * fetches weather data from openweathermap api using latitude and longitude
+    * data validation: if there is a 404 error for city not found, call displayError function
+    * if no error message, call displayCurrentResults and send city name, weather icon, temp, wind speed, humidity, and uv index
+
+*/
 function handleCurrentWeatherResults(cityName, latitude, longitude) {
-  // create fecth url
   const fetchUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=517f19dc586407c39701b016a6edf914`;
-  // fetch
+
   fetch(fetchUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-      // if received a 404 error message for city not found
       if (data.cod === "404") {
-        // call displayError function
         displayError();
       } else {
-        // if no error message, call displayCurrentResults and send city name, weather icon, temp, wind speed, humidity, and uv index
-        // variable for city name
         const weatherCityName = cityName;
-        // variable for weather icon
         const currentWeatherIconId = data.current.weather[0].icon;
-        // variable for weather description for alt tag
         const currentWeatherDescription = data.current.weather[0].description;
-        // variable for temp
         const currentTemp = data.current.temp;
-        // variable for wind speed
         const currentWindSpeed = data.current.wind_speed;
-        // variable for humidity
         const currentHumidity = data.current.humidity;
-        // variable for uv index
         const currentUVI = data.current.uvi;
-        // call displayCurrentResults and send it variables
+
         displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI, latitude, longitude);
       }
     });
 }
 
-// displayError
+/*
+ displayError
+  displays message "Please enter a city." if there is an error
+    * calls clearErrorMessage function to clear string from error div
+    * displays error message to error div
+    * clears previously searched city name from the input box
+    * returns
+*/
 function displayError() {
-  // clear existing string
-  document.getElementById("errorDiv").innerHTML = "";
-  // display error response
+  clearErrorMessage();
   document.getElementById("errorDiv").innerHTML = "Please enter a city.";
-  // clear previously searched city name
   document.getElementById("formCityNameInput").value = "";
-  // return
   return;
 }
 
-// displayCurrentResults
+/*
+ displayCurrentResults
+  displays current weather information to CurrentWeaterCard
+    * calls clearCurrentWeatherCard function to remove existing strings
+    * calls removeUVIBackgroundColor function to remove background color from UVI span
+    * calls clearErrorMessage function to clear string from error div
+    * displays current date using moment
+    * displays city name, the weather icon (adding appropriate alt property), temperature, wind speed, hummidity, and UV index
+    * updates the background color of the UVI span to indicate whether the conditions are favorable (green), moderate (yellow), or severe (red).
+    * calls handleForecastWeatherResults and sends latitude and longitude
+*/
 function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWeatherDescription, currentTemp, currentWindSpeed, currentHumidity, currentUVI, latitude, longitude) {
-  // clear existing strings
   clearCurrentWeatherCard();
-  // remove existing UV background color
   removeUVIBackgroundColor();
-  // clear existing error
-  document.getElementById("errorDiv").innerHTML = "";
-  // display city name
+  clearErrorMessage();
   document.getElementById("citySpan").innerHTML = weatherCityName;
-  // display current date
   const currentDate = moment().format("L");
   document.getElementById("dateSpan").innerHTML = currentDate;
-  // display weather icon
   document.getElementById("currentWeatherIconDisplay").src = `https://openweathermap.org/img/wn/${currentWeatherIconId}.png`;
-  // add appropriate alt property to icon image
   document.getElementById("currentWeatherIconDisplay").alt = currentWeatherDescription;
-  // display current temperature
   document.getElementById("currentTempDisplay").innerHTML = `Temp: ${currentTemp}°F`;
-  // display current wind speed
   document.getElementById("currentWindDisplay").innerHTML = `Wind: ${currentWindSpeed} MPH`;
-  // display current humidity
   document.getElementById("currentHumidityDisplay").innerHTML = `Humidity: ${currentHumidity} %`;
-  // display current UV Index
   document.getElementById("currentUVIndexDisplay").innerHTML = `${currentUVI}`;
 
-  // set background color for UVI
   if (currentUVI < uvLowMax) {
     document.getElementById("currentUVIndexDisplay").classList.add("bg-success");
   } else if (currentUVI < uvModMax) {
@@ -254,79 +268,75 @@ function displayCurrentResults(weatherCityName, currentWeatherIconId, currentWea
     document.getElementById("currentUVIndexDisplay").classList.add("bg-danger");
   }
 
-  //call handleForecastWeatherResults and send latitude and longitude
   handleForecastWeatherResults(latitude, longitude);
 }
 
 /*
- * Habjhgsdjfgsdf sdjhgfj sdhgf
- * kjhsdkj hsdfkjh sdfkh sdfkjh sdkh fsdkhfs dkj dhskjjhsd fksdh f
- * k ksjhdkfsjhdfkh f
- */
+ handleForecastWeatherResults
+  fetches forecast weather and loops through data to send specific forecast data to display
+    * fetches forecast weather data from openweathermap api using latitude and longitude
+    * data validation: if there is a 404 error for city not found, call displayError function
+    * if no error message, loop through the next five days and send x (forecast day), the weather icon id, 
+      weather description,temperature, wind, and humidity to displayForecastResults function
+*/
 function handleForecastWeatherResults(latitude, longitude) {
-  // create fecth url
   const fetchUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&units=imperial&appid=517f19dc586407c39701b016a6edf914`;
 
-  // fetch
   fetch(fetchUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-      // if received a 404 error message for city not found
       if (data.cod === "404") {
-        // call displayError function
         displayError();
       } else {
-        // if no error message, call displayForeCastResults and send date, weather icon, temp, wind speed, humidity, and uv index
         let x = 1;
         while (x <= 5) {
-          // variable for weather icon id
           const forecastWeatherIconId = data.daily[x].weather[0].icon;
-          // variable for weather description
           const forecastWeatherDescription = data.daily[x].weather[0].description;
-          //variable for temp
           const forecastTemp = data.daily[x].temp.day;
-          //variable for Wind
           const forecastWind = data.daily[x].wind_speed;
-          //variable for Humidity
           const forecastHumidity = data.daily[x].humidity;
-          // call displayForecastResults function and send it variables
+
           displayForecastResults(x, forecastWeatherIconId, forecastWeatherDescription, forecastTemp, forecastWind, forecastHumidity);
-          // add 1 to x to move to next day
+
           x++;
         }
       }
     });
 }
 
-//
+/*
+ displayForecastWeatherResults
+  displays weather forcast data for the next five days
+    * calls clearErrorMessage function to clear string from error div
+    * for each forecast day card, displays current date using moment, along with the 
+      weather icon (with appropriate alt property for icon image), temperature, wind speed, and humidity
+    * clears previously searched city name from city input box
+    * calls showContainerById to show the currentWeatherCard and fiveDayForecast divs
+*/
 function displayForecastResults(x, forecastWeatherIconId, forecastWeatherDescription, forecastTemp, forecastWind, forecastHumidity) {
-  // clear existing error
-  document.getElementById("errorDiv").innerHTML = "";
-  // Day 1 Forecast
-  // display current date
+  clearErrorMessage();
+
   const forecastDate = moment().add(x, "d").format("L");
   document.getElementById("forecastDay" + x + "Date").innerHTML = forecastDate;
-  // display weather icon
   document.getElementById("forecastDay" + x + "WeatherIconDisplay").src = `https://openweathermap.org/img/wn/${forecastWeatherIconId}@2x.png`;
-  // add appropriate alt property to icon image
   document.getElementById("forecastDay" + x + "WeatherIconDisplay").alt = forecastWeatherDescription;
-  // display current temperature
   document.getElementById("forecastDay" + x + "Temp").innerHTML = `Temp: ${forecastTemp}°F`;
-  // display current wind speed
   document.getElementById("forecastDay" + x + "WindSpeed").innerHTML = `Wind: ${forecastWind} MPH`;
-  // display current humidity
   document.getElementById("forecastDay" + x + "Humidity").innerHTML = `Humidity: ${forecastHumidity} %`;
-  // clear previously searched city name
+
   document.getElementById("formCityNameInput").value = "";
 
-  //show currentWeatherCard and fiveDayForecast
   showContainerById("currentWeatherCard");
   showContainerById("fiveDayForecast");
 }
 
-// clearCurrentWeatherCard to clear out all strings in Current Weather Card div
+/*
+ clearCurrentWeatherCard 
+  clears out all strings in Current Weather Card div
+    * sets all innerHTML of elements in the CurrentWeatherCard div to ""
+*/
 function clearCurrentWeatherCard() {
   document.getElementById("citySpan").innerHTML = "";
   document.getElementById("dateSpan").innerHTML = "";
@@ -337,14 +347,31 @@ function clearCurrentWeatherCard() {
   document.getElementById("currentUVIndexDisplay").innerHTML = "";
 }
 
-// remove background color of UVI span
+/*
+ clearErrorMessage
+  clears error message "Please enter a city"
+    * sets innerHTML of errorDiv to ""
+*/
+function clearErrorMessage() {
+  document.getElementById("errorDiv").innerHTML = "";
+}
+
+/*
+ removeUVIBackgroundColor
+  removes color class from currentUVIndexDisplay span
+    * removes all possible color classes added to the currentUVIndexDisplay span
+*/
 function removeUVIBackgroundColor() {
   document.getElementById("currentUVIndexDisplay").classList.remove("bg-success");
   document.getElementById("currentUVIndexDisplay").classList.remove("bg-warning");
   document.getElementById("currentUVIndexDisplay").classList.remove("bg-danger");
 }
 
-//utility function to show container by id
+/*
+ showContainerById
+  utility function to show container by id
+    * removes hidden class from container
+*/
 function showContainerById(container) {
   document.getElementById(container).classList.remove("hidden");
 }
