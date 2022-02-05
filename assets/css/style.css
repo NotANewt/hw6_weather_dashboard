@@ -14,12 +14,12 @@ body {
   background-color: rgba(151, 117, 170, 1);
 }
 
-.hidden {
-  display: none;
-}
-
 .btn {
   text-transform: capitalize;
+}
+
+.hidden {
+  display: none;
 }
 
 .no-text-decor {
