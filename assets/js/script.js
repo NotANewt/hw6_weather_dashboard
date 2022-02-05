@@ -150,7 +150,7 @@ function makeTheButton(cityName) {
   // create search history button
   const pastCitySearchButton = document.createElement("button");
   // style button
-  pastCitySearchButton.classList.add("btn", "btn-secondary", "d-block", "mb-2", "text-dark");
+  pastCitySearchButton.classList.add("btn", "background-color-medium-purple", "d-block", "mb-2", "text-white");
   // add text to button
   pastCitySearchButton.innerHTML = cityName;
   // add id to button
