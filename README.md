@@ -22,6 +22,11 @@ When the user visits the app, they are prompted to allow or block location infor
 
 ![The Weather Dashboard app includes a header with "Weather Dashboard" in white text on a dark purple background, an aside with a text input box and a purple button underneath with white "Search" text.  A box containing the current weather conditions for the searched city is to the right.  Below the current weather is the five-day forecast, with white text on a purple background. Only the first day of the forecast is shown, and scrolling down reveals the next four days.  At the bottom of the app is the header with white text "Made with ♡ and Javascript by Meegan"](./assets/img/06_weather_dashboard_iphone_ss.png)
 
+### Contact Information
+
+- NotANewt's email: [Email Me](mailto:meegan.r.anderson@gmail.com)
+- NotANewt's gitHub profile: [NotANewt/profile](https://github.com/NotANewt)
+
 ### Links To Application
 
 - Here is the repo: [NotANewt/hw6_weather_dashboard](https://github.com/NotANewt/hw6_weather_dashboard)
