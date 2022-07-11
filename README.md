@@ -54,5 +54,5 @@ If you have any questions:
 
 ## Links
 
-- Here is the repo: [NotANewt/Weather Dashboard](https://github.com/NotANewt/hw6_weather_dashboard)
-- Here is the pages: [NotANewt/pages](https://notanewt.github.io/hw6_weather_dashboard/)
+- Here is the repo: [NotANewt/Weather Dashboard](https://github.com/NotANewt/weather_dashboard)
+- Here is the pages: [NotANewt/pages](https://notanewt.github.io/weather_dashboard/)
